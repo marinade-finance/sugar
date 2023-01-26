@@ -1,3 +1,4 @@
+#[allow(clippy::uninlined_format_args)]
 use std::{
     fs::OpenOptions,
     path::PathBuf,
@@ -32,6 +33,7 @@ use sugar_cli::{
     launch::{process_launch, LaunchArgs},
     mint::{process_mint, MintArgs},
     parse::parse_sugar_errors,
+    read_cache::{process_read_cache, ReadCacheArgs},
     reveal::{process_reveal, RevealArgs},
     show::{process_show, ShowArgs},
     sign::{process_sign, SignArgs},
@@ -53,7 +55,7 @@ fn setup_logging(level: Option<EnvFilter>) -> Result<()> {
     let file = OpenOptions::new()
         .write(true)
         .create(true)
-        .open(&log_path)
+        .open(log_path)
         .unwrap();
 
     // Prioritize user-provided level, otherwise read from RUST_LOG env var for log level, fall back to "tracing" if not set.
@@ -456,6 +458,14 @@ async fn run() -> Result<()> {
                 interrupted: interrupted.clone(),
             })
             .await?
+        }
+        Commands::ReadCache { config, cache } => {
+            process_read_cache(ReadCacheArgs {
+                config,
+                cache,
+                interrupted: interrupted.clone(),
+            })
+            .await?;
         }
         Commands::Validate {
             assets_dir,

@@ -300,6 +300,16 @@ pub enum Commands {
         cache: String,
     },
 
+    ReadCache {
+        /// Path to the config file
+        #[clap(short, long, default_value = DEFAULT_CONFIG)]
+        config: String,
+
+        /// Path to the cache file
+        #[clap(long, default_value = DEFAULT_CACHE)]
+        cache: String,
+    },
+
     /// Validate JSON metadata files
     Validate {
         /// Assets directory to upload, defaults to "assets"

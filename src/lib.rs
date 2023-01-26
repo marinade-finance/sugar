@@ -1,3 +1,4 @@
+#[allow(clippy::uninlined_format_args)]
 pub mod airdrop;
 pub mod bundlr;
 pub mod cache;
@@ -18,6 +19,7 @@ pub mod mint;
 pub mod parse;
 pub mod pdas;
 pub mod program_errors;
+pub mod read_cache;
 pub mod reveal;
 pub mod setup;
 pub mod show;

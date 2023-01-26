@@ -12,6 +12,7 @@ use crate::{
     candy_machine::{get_candy_machine_state, CANDY_MACHINE_ID},
     common::*,
     config::{data::ConfigData, parser::get_config_data},
+    hash::hash_and_update,
     utils::{assert_correct_authority, spinner_with_style},
 };
 
@@ -27,7 +28,7 @@ pub struct UpdateArgs {
 pub fn process_update(args: UpdateArgs) -> Result<()> {
     let sugar_config = sugar_setup(args.keypair, args.rpc_url)?;
     let client = setup_client(&sugar_config)?;
-    let config_data = get_config_data(&args.config)?;
+    let mut config_data = get_config_data(&args.config)?;
 
     // the candy machine id specified takes precedence over the one from the cache
     let candy_machine_id = match args.candy_machine {
@@ -58,6 +59,18 @@ pub fn process_update(args: UpdateArgs) -> Result<()> {
     pb.set_message("Connecting...");
 
     let candy_machine_state = get_candy_machine_state(&sugar_config, &candy_pubkey)?;
+    if let Some(hidden_settings) = config_data.hidden_settings.as_ref() {
+        println!(
+            "\nHidden settings hash: {}",
+            hash_and_update(
+                hidden_settings.clone(),
+                &args.config,
+                &mut config_data,
+                &args.cache,
+            )?
+        );
+    }
+
     let candy_machine_data = create_candy_machine_data(&config_data, &candy_machine_state.data)?;
 
     pb.finish_with_message("Done");
